@@ -1,0 +1,150 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+// Struct untuk menyimpan data karyawan
+struct Karyawan {
+    string nama;
+    int umur;
+    string nik;
+    string jabatan;
+};
+
+// Maksimal data karyawan
+Karyawan data[100];
+int jumlah = 0;
+
+// Fungsi untuk membaca data dari file
+void bacaFile() {
+    ifstream file("karyawan.txt");
+    jumlah = 0;
+    while (!file.eof()) {
+        getline(file, data[jumlah].nik);
+        if (file.eof()) break;
+        getline(file, data[jumlah].nama);
+        file >> data[jumlah].umur;
+        file.ignore();
+        getline(file, data[jumlah].jabatan);
+        jumlah++;
+    }
+    file.close();
+}
+
+// Fungsi untuk menyimpan data ke file
+void simpanFile() {
+    ofstream file("karyawan.txt");
+    for (int i = 0; i < jumlah; i++) {
+        file << data[i].nik << endl;
+        file << data[i].nama << endl;
+        file << data[i].umur << endl;
+        file << data[i].jabatan << endl;
+    }
+    file.close();
+}
+
+// Menampilkan semua data
+void tampilData() {
+    if (jumlah == 0) {
+        cout << "Belum ada data karyawan.\n";
+        return;
+    }
+    cout << "\n=== DATA KARYAWAN ===\n";
+    for (int i = 0; i < jumlah; i++) {
+        cout << "NIK     : " << data[i].nik << endl;
+        cout << "Nama    : " << data[i].nama << endl;
+        cout << "Umur    : " << data[i].umur << endl;
+        cout << "Jabatan : " << data[i].jabatan << endl;
+        cout << "------------------------\n";
+    }
+}
+
+// Menambahkan data karyawan baru
+void tambahData() {
+    cin.ignore();
+    cout << "Masukkan NIK     : ";
+    getline(cin, data[jumlah].nik);
+    cout << "Masukkan Nama    : ";
+    getline(cin, data[jumlah].nama);
+    cout << "Masukkan Umur    : ";
+    cin >> data[jumlah].umur;
+    cin.ignore();
+    cout << "Masukkan Jabatan : ";
+    getline(cin, data[jumlah].jabatan);
+    jumlah++;
+    simpanFile();
+    cout << "Data berhasil ditambahkan!\n";
+}
+
+// Mengedit data berdasarkan NIK
+void editData() {
+    string cariNIK;
+    cin.ignore();
+    cout << "Masukkan NIK yang akan diedit: ";
+    getline(cin, cariNIK);
+
+    for (int i = 0; i < jumlah; i++) {
+        if (data[i].nik == cariNIK) {
+            cout << "Masukkan Nama baru    : ";
+            getline(cin, data[i].nama);
+            cout << "Masukkan Umur baru    : ";
+            cin >> data[i].umur;
+            cin.ignore();
+            cout << "Masukkan Jabatan baru : ";
+            getline(cin, data[i].jabatan);
+            simpanFile();
+            cout << "Data berhasil diperbarui!\n";
+            return;
+        }
+    }
+    cout << "Data dengan NIK tersebut tidak ditemukan.\n";
+}
+
+// Menghapus data berdasarkan NIK
+void hapusData() {
+    string hapusNIK;
+    cin.ignore();
+    cout << "Masukkan NIK yang ingin dihapus: ";
+    getline(cin, hapusNIK);
+
+    for (int i = 0; i < jumlah; i++) {
+        if (data[i].nik == hapusNIK) {
+            for (int j = i; j < jumlah - 1; j++) {
+                data[j] = data[j + 1];
+            }
+            jumlah--;
+            simpanFile();
+            cout << "Data berhasil dihapus!\n";
+            return;
+        }
+    }
+    cout << "Data dengan NIK tersebut tidak ditemukan.\n";
+}
+
+// Fungsi utama
+int main() {
+    int pilihan;
+    bacaFile();
+
+    do {
+        cout << "\n=== MENU MANAJEMEN DATA KARYAWAN ===\n";
+        cout << "1. Tampilkan Semua Data\n";
+        cout << "2. Tambah Data Karyawan\n";
+        cout << "3. Edit Data Karyawan\n";
+        cout << "4. Hapus Data Karyawan\n";
+        cout << "5. Keluar\n";
+        cout << "Pilih menu (1-5): ";
+        cin >> pilihan;
+
+        switch (pilihan) {
+            case 1: tampilData(); break;
+            case 2: tambahData(); break;
+            case 3: editData(); break;
+            case 4: hapusData(); break;
+            case 5: cout << "Terima kasih!\n"; break;
+            default: cout << "Pilihan tidak valid.\n";
+        }
+    } while (pilihan != 5);
+
+    return 0;
+}
